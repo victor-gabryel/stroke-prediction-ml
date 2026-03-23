@@ -5,129 +5,116 @@ import seaborn as sns
 
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
-from sklearn.ensemble import RandomForestClassifier
 from sklearn.linear_model import LogisticRegression
-from sklearn.metrics import accuracy_score
-from xgboost import XGBClassifier
-
-
 
 # CONFIG
-st.set_page_config(page_title="Stress Analysis", layout="wide")
+st.set_page_config(page_title="Análise de Estresse", layout="wide")
+st.title("Análise de Estresse em Estudantes")
 
-st.title("📊 Análise de Estresse em Estudantes")
+# CARREGAR DADOS
+df = pd.read_csv("data.csv")
 
+# ================================
+# TRADUÇÃO DAS COLUNAS
+# ================================
+traducao = {
+    "anxiety_level": "Nível de Ansiedade",
+    "self_esteem": "Autoestima",
+    "sleep_quality": "Qualidade do Sono",
+    "study_hours": "Horas de Estudo",
+    "academic_performance": "Desempenho Acadêmico",
+    "social_support": "Apoio Social",
+    "depression": "Depressão",
+    "noise_level": "Nível de Ruído",
+    "living_conditions": "Condições de Moradia",
+    "stress_level": "Nível de Estresse"
+}
 
-
-# CARREGAR DATASET
-DATA_PATH = "data.csv"
-
-df = pd.read_csv(DATA_PATH)
+# Renomeia as colunas no dataframe
+df = df.rename(columns=traducao)
 
 st.subheader("Dados")
 st.dataframe(df.head())
 
 
+# IDENTIFICAR COLUNA ALVO (já traduzida)
+coluna_alvo = "Nível de Estresse"
 
-# DETECTAR COLUNA TARGET
-possible_targets = ["stress_level", "stress", "Stress_Level", "Stress"]
-
-target_col = None
-for col in possible_targets:
-    if col in df.columns:
-        target_col = col
-        break
-
-if target_col is None:
-    st.error("❌ Nenhuma coluna de stress encontrada!")
-    st.write("Colunas disponíveis:", df.columns)
+if coluna_alvo not in df.columns:
+    st.error("Coluna de estresse não encontrada.")
     st.stop()
 
-st.info(f"Coluna alvo detectada: {target_col}")
+
+# SEPARAÇÃO
+X = df.drop(coluna_alvo, axis=1)
+y = df[coluna_alvo]
 
 
-
-# CORRELAÇÃO
-st.subheader("📊 Correlação")
-
-corr = df.corr()
-
-fig, ax = plt.subplots(figsize=(10,6))
-sns.heatmap(corr, cmap="coolwarm", ax=ax)
-st.pyplot(fig)
-
-st.write("Correlação com o nível de estresse:")
-st.write(corr[target_col].sort_values(ascending=False))
-
-
-
-# FEATURE IMPORTANCE
-st.subheader("Principais causadores de estresse")
-
-X = df.drop(target_col, axis=1)
-y = df[target_col]
-
-rf = RandomForestClassifier(random_state=42)
-rf.fit(X, y)
-
-importances = pd.DataFrame({
-    "feature": X.columns,
-    "importance": rf.feature_importances_
-}).sort_values(by="importance", ascending=False)
-
-st.dataframe(importances)
-
-fig2, ax2 = plt.subplots(figsize=(8,5))
-sns.barplot(data=importances.head(10), x="importance", y="feature", ax=ax2)
-st.pyplot(fig2)
-
-
-
-# MODELOS
-st.subheader("🤖 Modelos")
-
+# PADRONIZAÇÃO
 scaler = StandardScaler()
-X_scaled = scaler.fit_transform(X)
+X_padronizado = scaler.fit_transform(X)
 
-X_train, X_test, y_train, y_test = train_test_split(
-    X_scaled, y, test_size=0.2, random_state=42
+
+# TREINO / TESTE
+X_treino, X_teste, y_treino, y_teste = train_test_split(
+    X_padronizado, y, test_size=0.2, random_state=42
 )
 
-models = {
-    "Logistic Regression": LogisticRegression(max_iter=1000),
-    "Random Forest": RandomForestClassifier(),
-    "XGBoost": XGBClassifier(use_label_encoder=False, eval_metric='mlogloss')
-}
 
-results = {}
-
-for name, model in models.items():
-    model.fit(X_train, y_train)
-    preds = model.predict(X_test)
-    results[name] = accuracy_score(y_test, preds)
-
-st.write("📈 Acurácia:")
-st.write(results)
+# MODELO
+modelo = LogisticRegression(max_iter=1000)
+modelo.fit(X_treino, y_treino)
 
 
+# IMPORTÂNCIA DAS VARIÁVEIS
+importancias = pd.DataFrame({
+    "Variável": X.columns,
+    "Impacto": abs(modelo.coef_).mean(axis=0)
+}).sort_values(by="Impacto", ascending=False)
 
-# SIMULAÇÃO
-st.subheader("Simulação de melhoria")
 
-top_features = importances.head(5)["feature"].tolist()
+# ================================
+# GRÁFICO (JÁ TRADUZIDO)
+# ================================
+st.subheader("Principais fatores que aumentam o estresse")
 
-feature = st.selectbox("Escolha um fator:", top_features)
-value = st.slider("Melhoria:", 0, 5, 1)
+fig, ax = plt.subplots(figsize=(8, 5))
 
-df_sim = df.copy()
-df_sim[feature] += value
+sns.barplot(
+    data=importancias.head(10),
+    x="Impacto",
+    y="Variável",
+    ax=ax
+)
 
-X_sim = scaler.transform(df_sim.drop(target_col, axis=1))
+ax.set_xlabel("Impacto no Estresse")
+ax.set_ylabel("Fatores")
 
-model = LogisticRegression(max_iter=1000)
-model.fit(X_scaled, y)
+st.pyplot(fig)
 
-preds_sim = model.predict(X_sim)
 
-st.write("Distribuição após melhoria:")
-st.write(pd.Series(preds_sim).value_counts())
+# ================================
+# CORRELAÇÃO (TRADUZIDA)
+# ================================
+st.subheader("Correlação entre variáveis")
+
+correlacao = df.corr()
+
+fig2, ax2 = plt.subplots(figsize=(10, 6))
+sns.heatmap(correlacao, cmap="coolwarm", ax=ax2)
+
+st.pyplot(fig2)
+
+st.write("Correlação com o estresse:")
+st.dataframe(correlacao[coluna_alvo].sort_values(ascending=False))
+
+
+# ================================
+# RESULTADO FINAL
+# ================================
+st.subheader("Principais causadores do estresse")
+
+top_fatores = importancias.head(5)["Variável"].tolist()
+
+for i, fator in enumerate(top_fatores, 1):
+    st.write(f"{i}. {fator}")
