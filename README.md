@@ -1,10 +1,10 @@
-# 🧬 Stroke Prediction ML - Versão 02
+# Stroke Prediction ML - Versão 03
 
 Este repositório contém um projeto acadêmico focado na aplicação de técnicas de Machine Learning para a predição de Acidente Vascular Cerebral (AVC).
 
 ---
 
-## 🎯 Objetivo
+## Objetivo
 
 O objetivo principal deste projeto é:
 
@@ -15,7 +15,7 @@ O objetivo principal deste projeto é:
 
 ---
 
-## 📊 Dataset
+## Dataset
 
 O projeto utiliza o **Stroke Prediction Dataset**, contendo aproximadamente:
 
@@ -25,16 +25,16 @@ O projeto utiliza o **Stroke Prediction Dataset**, contendo aproximadamente:
 
 ---
 
-## 📚 Artigos analisados
+## Artigos analisados
 
 Este projeto será baseado na análise dos seguintes tipos de estudos:
 
-1. Modelos de Machine Learning com técnicas de balanceamento (ex: SMOTE)
+1. Modelos de Machine Learning com técnicas de balanceamento
 2. Comparação de diferentes algoritmos de classificação
 
 ---
 
-## ⚙️ Metodologia
+## Metodologia
 
 O projeto seguirá as seguintes etapas:
 
@@ -73,7 +73,7 @@ O projeto seguirá as seguintes etapas:
 
 ---
 
-## 🚀 Resultados esperados
+## Resultados esperados
 
 * Reproduzir os resultados encontrados nos artigos
 * Identificar limitações dos métodos utilizados
@@ -82,13 +82,13 @@ O projeto seguirá as seguintes etapas:
 
 ---
 
-## 🧠 Contexto acadêmico
+## Contexto acadêmico
 
 Este projeto tem finalidade acadêmica e será utilizado como base para estudo e desenvolvimento na área de Machine Learning aplicada à saúde.
 
 ---
 
-## 📌 Tecnologias
+## Tecnologias
 
 * Python
 * Pandas
@@ -97,6 +97,6 @@ Este projeto tem finalidade acadêmica e será utilizado como base para estudo e
 
 ---
 
-## 📄 Licença
+## Licença
 
 Este projeto é destinado exclusivamente para fins educacionais.
