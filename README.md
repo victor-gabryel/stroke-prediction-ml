@@ -1,4 +1,4 @@
-# 🧬 Stroke Prediction ML
+# 🧬 Stroke Prediction ML - Versão 01
 
 Este repositório contém um projeto acadêmico focado na aplicação de técnicas de Machine Learning para a predição de Acidente Vascular Cerebral (AVC).
 
