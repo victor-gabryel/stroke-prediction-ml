@@ -10,28 +10,26 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import accuracy_score
 from xgboost import XGBClassifier
 
-# =========================
+
+
 # CONFIG
-# =========================
 st.set_page_config(page_title="Stress Analysis", layout="wide")
 
 st.title("📊 Análise de Estresse em Estudantes")
 
-# =========================
-# CARREGAR DATASET FIXO
-# =========================
+
+
+# CARREGAR DATASET
 DATA_PATH = "data.csv"
 
 df = pd.read_csv(DATA_PATH)
 
-st.success("Dataset carregado com sucesso!")
-
-st.subheader("📄 Dados")
+st.subheader("Dados")
 st.dataframe(df.head())
 
-# =========================
+
+
 # DETECTAR COLUNA TARGET
-# =========================
 possible_targets = ["stress_level", "stress", "Stress_Level", "Stress"]
 
 target_col = None
@@ -45,11 +43,11 @@ if target_col is None:
     st.write("Colunas disponíveis:", df.columns)
     st.stop()
 
-st.info(f"🎯 Coluna alvo detectada: {target_col}")
+st.info(f"Coluna alvo detectada: {target_col}")
 
-# =========================
+
+
 # CORRELAÇÃO
-# =========================
 st.subheader("📊 Correlação")
 
 corr = df.corr()
@@ -61,10 +59,10 @@ st.pyplot(fig)
 st.write("Correlação com o nível de estresse:")
 st.write(corr[target_col].sort_values(ascending=False))
 
-# =========================
+
+
 # FEATURE IMPORTANCE
-# =========================
-st.subheader("🔥 Principais causadores de estresse")
+st.subheader("Principais causadores de estresse")
 
 X = df.drop(target_col, axis=1)
 y = df[target_col]
@@ -83,9 +81,9 @@ fig2, ax2 = plt.subplots(figsize=(8,5))
 sns.barplot(data=importances.head(10), x="importance", y="feature", ax=ax2)
 st.pyplot(fig2)
 
-# =========================
+
+
 # MODELOS
-# =========================
 st.subheader("🤖 Modelos")
 
 scaler = StandardScaler()
@@ -111,10 +109,10 @@ for name, model in models.items():
 st.write("📈 Acurácia:")
 st.write(results)
 
-# =========================
+
+
 # SIMULAÇÃO
-# =========================
-st.subheader("🧪 Simulação de melhoria")
+st.subheader("Simulação de melhoria")
 
 top_features = importances.head(5)["feature"].tolist()
 
