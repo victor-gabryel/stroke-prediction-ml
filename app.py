@@ -146,7 +146,7 @@ st.dataframe(correlacao[coluna_alvo].sort_values(ascending=False))
 st.subheader("Relação entre Depressão e Estresse (média)")
 
 st.dataframe(
-    df.groupby("Depressão")["Nível de Estresse"].mean()
+    df.groupby("Bullying")["Nível de Estresse"].agg(["mean", "count"])
 )
 
 
