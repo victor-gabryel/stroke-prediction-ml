@@ -1,102 +1,342 @@
 # Stroke Prediction ML - Versão 03
 
-Este repositório contém um projeto acadêmico focado na aplicação de técnicas de Machine Learning para a predição de Acidente Vascular Cerebral (AVC).
+# Análise de Estresse com Regressão Linear
+
+## Visão Geral
+
+Este documento explica detalhadamente cada parte do código utilizado para analisar e prever o nível de estresse em estudantes utilizando regressão linear.
 
 ---
 
-## Objetivo
+## Importações
 
-O objetivo principal deste projeto é:
+```python
+import streamlit as st
+```
 
-* Analisar dois artigos científicos relacionados à predição de AVC
-* Reproduzir suas abordagens utilizando o **Stroke Prediction Dataset (Kaggle)**
-* Comparar os resultados obtidos
-* Propor melhorias nos modelos para aumentar o desempenho
+Importa a biblioteca Streamlit, usada para criar a interface web interativa.
 
----
+```python
+import pandas as pd
+```
 
-## Dataset
+Importa o Pandas, utilizado para manipulação e análise de dados em formato de tabelas.
 
-O projeto utiliza o **Stroke Prediction Dataset**, contendo aproximadamente:
+```python
+import matplotlib.pyplot as plt
+import seaborn as sns
+```
 
-* 5110 registros
-* 12 variáveis clínicas e demográficas
-* Problema de classificação binária (AVC ou não)
+Bibliotecas usadas para geração de gráficos e visualizações.
 
----
+```python
+from sklearn.model_selection import train_test_split
+```
 
-## Artigos analisados
+Função que divide os dados em conjuntos de treino e teste.
 
-Este projeto será baseado na análise dos seguintes tipos de estudos:
+```python
+from sklearn.preprocessing import StandardScaler
+```
 
-1. Modelos de Machine Learning com técnicas de balanceamento
-2. Comparação de diferentes algoritmos de classificação
+Classe responsável por padronizar os dados (normalização).
 
----
+```python
+from sklearn.linear_model import LinearRegression
+```
 
-## Metodologia
+Modelo de regressão linear usado para prever valores contínuos.
 
-O projeto seguirá as seguintes etapas:
+```python
+from sklearn.metrics import r2_score, mean_squared_error
+```
 
-1. **Pré-processamento dos dados**
-
-   * Limpeza e tratamento de valores ausentes
-   * Codificação de variáveis categóricas
-
-2. **Análise exploratória**
-
-   * Identificação de padrões e variáveis relevantes
-
-3. **Treinamento de modelos**
-
-   * Regressão Logística
-   * Decision Tree
-   * Random Forest
-   * Outros algoritmos
-
-4. **Balanceamento de dados**
-
-   * Aplicação de técnicas como SMOTE
-
-5. **Avaliação de desempenho**
-
-   * Accuracy
-   * Precision
-   * Recall
-   * F1-score
-
-6. **Melhoria dos resultados**
-
-   * Ajuste de hiperparâmetros
-   * Seleção de features
-   * Teste de novas abordagens
+Métricas para avaliar o desempenho do modelo.
 
 ---
 
-## Resultados esperados
+## Configuração da Aplicação
 
-* Reproduzir os resultados encontrados nos artigos
-* Identificar limitações dos métodos utilizados
-* Propor melhorias para aumentar a performance dos modelos
-* Contribuir com uma análise comparativa clara e fundamentada
+```python
+st.set_page_config(page_title="Análise de Estresse", layout="wide")
+```
 
----
+Define o título da aba do navegador e o layout da página.
 
-## Contexto acadêmico
+```python
+st.title("Análise de Estresse em Estudantes")
+```
 
-Este projeto tem finalidade acadêmica e será utilizado como base para estudo e desenvolvimento na área de Machine Learning aplicada à saúde.
-
----
-
-## Tecnologias
-
-* Python
-* Pandas
-* Scikit-learn
-* Matplotlib / Seaborn
+Define o título principal exibido na interface.
 
 ---
 
-## Licença
+## Carregamento dos Dados
 
-Este projeto é destinado exclusivamente para fins educacionais.
+```python
+df = pd.read_csv("data.csv")
+```
+
+Carrega o arquivo CSV contendo os dados dos estudantes.
+
+---
+
+## Tradução das Colunas
+
+```python
+traducao = { ... }
+```
+
+Dicionário que mapeia nomes das colunas em inglês para português.
+
+```python
+df = df.rename(columns=lambda x: traducao.get(x, x))
+```
+
+Renomeia as colunas do DataFrame usando o dicionário de tradução.
+
+---
+
+## Visualização Inicial
+
+```python
+st.subheader("Pré-visualização dos dados")
+```
+
+Cria um subtítulo na interface.
+
+```python
+st.dataframe(df.head())
+```
+
+Exibe as primeiras linhas do dataset.
+
+---
+
+## Definição da Variável Alvo
+
+```python
+coluna_alvo = "Nível de Estresse"
+```
+
+Define qual coluna será prevista pelo modelo.
+
+```python
+if coluna_alvo not in df.columns:
+```
+
+Verifica se a coluna existe no dataset.
+
+```python
+st.error("Coluna de estresse não encontrada.")
+st.stop()
+```
+
+Exibe erro e interrompe execução caso não exista.
+
+---
+
+## Preparação dos Dados
+
+```python
+df_modelo = df.copy()
+```
+
+Cria uma cópia dos dados para evitar alterações no original.
+
+```python
+X = df_modelo.drop(coluna_alvo, axis=1)
+```
+
+Seleciona as variáveis independentes (entrada do modelo).
+
+```python
+y = df_modelo[coluna_alvo]
+```
+
+Seleciona a variável alvo (o que será previsto).
+
+---
+
+## Padronização
+
+```python
+scaler = StandardScaler()
+```
+
+Cria o objeto de padronização.
+
+```python
+X_padronizado = scaler.fit_transform(X)
+```
+
+Aplica a padronização nos dados (média 0, desvio padrão 1).
+
+---
+
+## Divisão Treino/Teste
+
+```python
+X_treino, X_teste, y_treino, y_teste = train_test_split(
+    X_padronizado, y, test_size=0.2, random_state=42
+)
+```
+
+Divide os dados:
+
+* 80% para treino
+* 20% para teste
+  O `random_state` garante reprodutibilidade.
+
+---
+
+## Treinamento do Modelo
+
+```python
+modelo = LinearRegression()
+```
+
+Cria o modelo de regressão linear.
+
+```python
+modelo.fit(X_treino, y_treino)
+```
+
+Treina o modelo com os dados de treino.
+
+---
+
+## Avaliação do Modelo
+
+```python
+y_pred = modelo.predict(X_teste)
+```
+
+Faz previsões usando os dados de teste.
+
+```python
+r2 = r2_score(y_teste, y_pred)
+```
+
+Calcula o R², que indica o quanto o modelo explica os dados.
+
+```python
+rmse = mean_squared_error(y_teste, y_pred) ** 0.5
+```
+
+Calcula o erro médio das previsões.
+
+```python
+st.write(...)
+```
+
+Exibe os resultados na interface.
+
+---
+
+## Coeficientes do Modelo
+
+```python
+coeficientes = pd.DataFrame({
+    "Variável": X.columns,
+    "Coeficiente": modelo.coef_
+})
+```
+
+Cria uma tabela com o impacto de cada variável.
+
+```python
+.sort_values(by="Coeficiente", ascending=False)
+```
+
+Ordena do maior impacto positivo para o menor.
+
+---
+
+## Gráfico de Impacto
+
+```python
+sns.barplot(...)
+```
+
+Cria um gráfico de barras mostrando os fatores mais influentes.
+
+```python
+st.pyplot(fig_coef)
+```
+
+Exibe o gráfico no Streamlit.
+
+---
+
+## Correlação
+
+```python
+correlacao = df_modelo.corr(numeric_only=True)
+```
+
+Calcula a correlação entre todas as variáveis numéricas.
+
+```python
+sns.heatmap(...)
+```
+
+Exibe um mapa de calor da correlação.
+
+---
+
+## Análise Específica (Depressão)
+
+```python
+df.groupby("Depressão")["Nível de Estresse"].mean()
+```
+
+Calcula a média do estresse para cada nível de depressão.
+
+---
+
+## Resultados Finais
+
+```python
+coeficientes.head(5)
+```
+
+Seleciona os principais fatores que aumentam o estresse.
+
+```python
+coeficientes.tail(5)
+```
+
+Seleciona os fatores que reduzem o estresse.
+
+```python
+st.write(...)
+```
+
+Exibe os resultados numerados.
+
+---
+
+## Conclusão
+
+```python
+st.write(f"...")
+```
+
+Gera uma explicação automática com base nos resultados do modelo.
+
+---
+
+## Interpretação Geral
+
+* Coeficientes positivos indicam aumento do estresse
+* Coeficientes negativos indicam redução do estresse
+* R² indica o quanto o modelo consegue explicar os dados
+* RMSE indica o erro médio das previsões
+
+---
+
+## Observação Importante
+
+Os resultados dependem diretamente da qualidade dos dados.
+Se os dados estiverem inconsistentes, o modelo pode aprender padrões incorretos.
