@@ -1,342 +1,255 @@
-# Stroke Prediction ML - Versão 03
-
-# Análise de Estresse com Regressão Linear
+# Análise de Estresse em Estudantes — README
 
 ## Visão Geral
 
-Este documento explica detalhadamente cada parte do código utilizado para analisar e prever o nível de estresse em estudantes utilizando regressão linear.
+Este projeto utiliza Machine Learning (Regressão Linear) para analisar os principais fatores que influenciam o nível de estresse em estudantes.
+
+A aplicação foi desenvolvida com Streamlit, permitindo uma interface interativa com visualizações e análise de dados.
 
 ---
 
-## Importações
+## Tecnologias Utilizadas
+
+* Python
+* Streamlit
+* Pandas
+* Matplotlib
+* Seaborn
+* Scikit-learn
+
+---
+
+## Estrutura do Projeto
+
+```
+📁 stroke-prediction-ml/
+│__ app.py
+│__ data.csv
+|__ gerar_dataset.py
+│__ README.md
+|__ requirements.txt
+```
+
+---
+
+## Como Executar
+
+1. Instale as dependências:
+
+```bash
+pip install streamlit -r requirements.txt
+```
+
+2. Execute o projeto:
+
+```bash
+streamlit run app.py
+```
+
+---
+
+## Etapas do Código
+
+### 1. Importação das Bibliotecas
 
 ```python
 import streamlit as st
-```
-
-Importa a biblioteca Streamlit, usada para criar a interface web interativa.
-
-```python
 import pandas as pd
-```
-
-Importa o Pandas, utilizado para manipulação e análise de dados em formato de tabelas.
-
-```python
 import matplotlib.pyplot as plt
 import seaborn as sns
 ```
 
-Bibliotecas usadas para geração de gráficos e visualizações.
+Responsáveis por:
 
-```python
-from sklearn.model_selection import train_test_split
-```
-
-Função que divide os dados em conjuntos de treino e teste.
-
-```python
-from sklearn.preprocessing import StandardScaler
-```
-
-Classe responsável por padronizar os dados (normalização).
-
-```python
-from sklearn.linear_model import LinearRegression
-```
-
-Modelo de regressão linear usado para prever valores contínuos.
-
-```python
-from sklearn.metrics import r2_score, mean_squared_error
-```
-
-Métricas para avaliar o desempenho do modelo.
+* Interface web (Streamlit)
+* Manipulação de dados (Pandas)
+* Visualização (Matplotlib e Seaborn)
 
 ---
 
-## Configuração da Aplicação
+### 2. Configuração da Página
 
 ```python
 st.set_page_config(page_title="Análise de Estresse", layout="wide")
-```
-
-Define o título da aba do navegador e o layout da página.
-
-```python
 st.title("Análise de Estresse em Estudantes")
 ```
 
-Define o título principal exibido na interface.
+Define:
+
+* Título da página
+* Layout expandido
+* Título principal
 
 ---
 
-## Carregamento dos Dados
+### 3. Carregamento dos Dados
 
 ```python
 df = pd.read_csv("data.csv")
 ```
 
-Carrega o arquivo CSV contendo os dados dos estudantes.
+Lê o dataset contendo informações dos estudantes.
 
 ---
 
-## Tradução das Colunas
-
-```python
-traducao = { ... }
-```
-
-Dicionário que mapeia nomes das colunas em inglês para português.
+### 4. Tradução das Colunas
 
 ```python
 df = df.rename(columns=lambda x: traducao.get(x, x))
 ```
 
-Renomeia as colunas do DataFrame usando o dicionário de tradução.
+Converte nomes das colunas de inglês para português para melhor interpretação.
 
 ---
 
-## Visualização Inicial
-
-```python
-st.subheader("Pré-visualização dos dados")
-```
-
-Cria um subtítulo na interface.
+### 5. Pré-visualização dos Dados
 
 ```python
 st.dataframe(df.head())
 ```
 
-Exibe as primeiras linhas do dataset.
+Mostra as primeiras linhas do dataset.
 
 ---
 
-## Definição da Variável Alvo
+### 6. Definição da Variável Alvo
 
 ```python
 coluna_alvo = "Nível de Estresse"
 ```
 
-Define qual coluna será prevista pelo modelo.
-
-```python
-if coluna_alvo not in df.columns:
-```
-
-Verifica se a coluna existe no dataset.
-
-```python
-st.error("Coluna de estresse não encontrada.")
-st.stop()
-```
-
-Exibe erro e interrompe execução caso não exista.
+Essa é a variável que o modelo irá prever.
 
 ---
 
-## Preparação dos Dados
-
-```python
-df_modelo = df.copy()
-```
-
-Cria uma cópia dos dados para evitar alterações no original.
+### 7. Separação dos Dados
 
 ```python
 X = df_modelo.drop(coluna_alvo, axis=1)
-```
-
-Seleciona as variáveis independentes (entrada do modelo).
-
-```python
 y = df_modelo[coluna_alvo]
 ```
 
-Seleciona a variável alvo (o que será previsto).
+* X: variáveis independentes
+* y: variável dependente (estresse)
 
 ---
 
-## Padronização
+### 8. Padronização dos Dados
 
 ```python
 scaler = StandardScaler()
-```
-
-Cria o objeto de padronização.
-
-```python
 X_padronizado = scaler.fit_transform(X)
 ```
 
-Aplica a padronização nos dados (média 0, desvio padrão 1).
+Normaliza os dados para melhorar o desempenho do modelo.
 
 ---
 
-## Divisão Treino/Teste
+### 9. Divisão em Treino e Teste
 
 ```python
-X_treino, X_teste, y_treino, y_teste = train_test_split(
-    X_padronizado, y, test_size=0.2, random_state=42
-)
+train_test_split(...)
 ```
 
-Divide os dados:
+Divide os dados em:
 
-* 80% para treino
-* 20% para teste
-  O `random_state` garante reprodutibilidade.
+* 80% treino
+* 20% teste
 
 ---
 
-## Treinamento do Modelo
+### 10. Treinamento do Modelo
 
 ```python
 modelo = LinearRegression()
-```
-
-Cria o modelo de regressão linear.
-
-```python
 modelo.fit(X_treino, y_treino)
 ```
 
-Treina o modelo com os dados de treino.
+Cria e treina o modelo de regressão linear.
 
 ---
 
 ## Avaliação do Modelo
 
 ```python
-y_pred = modelo.predict(X_teste)
+r2_score
+mean_squared_error
 ```
 
-Faz previsões usando os dados de teste.
-
-```python
-r2 = r2_score(y_teste, y_pred)
-```
-
-Calcula o R², que indica o quanto o modelo explica os dados.
-
-```python
-rmse = mean_squared_error(y_teste, y_pred) ** 0.5
-```
-
-Calcula o erro médio das previsões.
-
-```python
-st.write(...)
-```
-
-Exibe os resultados na interface.
+* R²: quanto o modelo explica os dados
+* RMSE: erro médio da previsão
 
 ---
 
-## Coeficientes do Modelo
+## Análise dos Coeficientes
 
 ```python
-coeficientes = pd.DataFrame({
-    "Variável": X.columns,
-    "Coeficiente": modelo.coef_
-})
+modelo.coef_
 ```
 
-Cria uma tabela com o impacto de cada variável.
+Indica o impacto de cada variável:
 
-```python
-.sort_values(by="Coeficiente", ascending=False)
-```
-
-Ordena do maior impacto positivo para o menor.
+* Valores positivos aumentam o estresse
+* Valores negativos reduzem o estresse
 
 ---
 
-## Gráfico de Impacto
+## Visualizações
 
-```python
-sns.barplot(...)
-```
+### Gráfico de Impacto
 
-Cria um gráfico de barras mostrando os fatores mais influentes.
+Mostra as variáveis que mais influenciam o estresse.
 
-```python
-st.pyplot(fig_coef)
-```
+### Heatmap de Correlação
 
-Exibe o gráfico no Streamlit.
+Exibe a relação entre todas as variáveis do dataset.
 
 ---
 
-## Correlação
-
-```python
-correlacao = df_modelo.corr(numeric_only=True)
-```
-
-Calcula a correlação entre todas as variáveis numéricas.
-
-```python
-sns.heatmap(...)
-```
-
-Exibe um mapa de calor da correlação.
-
----
-
-## Análise Específica (Depressão)
+## Análise Específica
 
 ```python
 df.groupby("Depressão")["Nível de Estresse"].mean()
 ```
 
-Calcula a média do estresse para cada nível de depressão.
+Mostra a média de estresse baseada na depressão.
 
 ---
 
-## Resultados Finais
+## Resultados
 
-```python
-coeficientes.head(5)
-```
+O sistema identifica automaticamente:
 
-Seleciona os principais fatores que aumentam o estresse.
+### Fatores que Aumentam o Estresse
 
-```python
-coeficientes.tail(5)
-```
+Baseado nos maiores coeficientes
 
-Seleciona os fatores que reduzem o estresse.
+### Fatores que Reduzem o Estresse
 
-```python
-st.write(...)
-```
-
-Exibe os resultados numerados.
+Baseado nos menores coeficientes
 
 ---
 
 ## Conclusão
 
-```python
-st.write(f"...")
-```
+* O modelo utiliza regressão linear para prever o estresse
+* O R² indica o nível de explicação dos dados
+* Os coeficientes mostram quais fatores mais influenciam
 
-Gera uma explicação automática com base nos resultados do modelo.
-
----
-
-## Interpretação Geral
-
-* Coeficientes positivos indicam aumento do estresse
-* Coeficientes negativos indicam redução do estresse
-* R² indica o quanto o modelo consegue explicar os dados
-* RMSE indica o erro médio das previsões
+Importante:
+Os resultados dependem da qualidade dos dados. Dados inconsistentes podem afetar a precisão do modelo.
 
 ---
 
-## Observação Importante
+## Possíveis Melhorias
 
-Os resultados dependem diretamente da qualidade dos dados.
-Se os dados estiverem inconsistentes, o modelo pode aprender padrões incorretos.
+* Testar outros modelos (Random Forest, XGBoost)
+* Limpeza mais avançada dos dados
+* Feature engineering
+* Validação cruzada
+
+---
+
+## Autor
+
+Projeto desenvolvido para análise educacional e prática de Machine Learning.
