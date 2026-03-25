@@ -9,12 +9,18 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.linear_model import LinearRegression
 from sklearn.metrics import r2_score, mean_squared_error
 
+
+
 # Configurações
 st.set_page_config(page_title="Análise de Estresse", layout="wide")
 st.title("Análise de Estresse em Estudantes")
 
+
+
 # Carregar Dados
 df = pd.read_csv("data.csv")
+
+
 
 # Tradução das Colunas
 traducao = {
@@ -46,6 +52,8 @@ df = df.rename(columns=lambda x: traducao.get(x, x))
 st.subheader("Pré-visualização dos dados")
 st.dataframe(df.head())
 
+
+
 # Coluna Alvo
 coluna_alvo = "Nível de Estresse"
 
@@ -53,28 +61,36 @@ if coluna_alvo not in df.columns:
     st.error("Coluna de estresse não encontrada.")
     st.stop()
 
+
+
 # Separação
 df_modelo = df.copy()
 
 X = df_modelo.drop(coluna_alvo, axis=1)
 y = df_modelo[coluna_alvo]
 
+
+
 # Padronização
 scaler = StandardScaler()
 X_padronizado = scaler.fit_transform(X)
+
+
 
 # Divisão treino/teste
 X_treino, X_teste, y_treino, y_teste = train_test_split(
     X_padronizado, y, test_size=0.2, random_state=42
 )
 
-# Modelo CORRETO
+
+
+# Modelo Correto
 modelo = LinearRegression()
 modelo.fit(X_treino, y_treino)
 
-# ================================
-# DESEMPENHO DO MODELO
-# ================================
+
+
+# Desempenho do Modelo
 y_pred = modelo.predict(X_teste)
 
 r2 = r2_score(y_teste, y_pred)
@@ -84,9 +100,9 @@ st.subheader("Desempenho do modelo")
 st.write(f"R² (explicação do modelo): {r2:.2f}")
 st.write(f"Erro médio (RMSE): {rmse:.2f}")
 
-# ================================
-# COEFICIENTES
-# ================================
+
+
+# Coeficientes
 coeficientes = pd.DataFrame({
     "Variável": X.columns,
     "Coeficiente": modelo.coef_
@@ -94,6 +110,8 @@ coeficientes = pd.DataFrame({
 
 st.subheader("Coeficientes do modelo (impacto real)")
 st.dataframe(coeficientes)
+
+
 
 # Gráfico
 st.subheader("Impacto das variáveis no estresse")
@@ -108,9 +126,9 @@ sns.barplot(
 
 st.pyplot(fig_coef)
 
-# ================================
-# CORRELAÇÃO
-# ================================
+
+
+# Correlação
 st.subheader("Correlação entre variáveis")
 
 correlacao = df_modelo.corr(numeric_only=True)
@@ -122,18 +140,18 @@ st.pyplot(fig2)
 st.write("Correlação com o estresse:")
 st.dataframe(correlacao[coluna_alvo].sort_values(ascending=False))
 
-# ================================
-# ANÁLISE DE DEPRESSÃO (DEBUG)
-# ================================
+
+
+# Análise de Depressão (Debug)
 st.subheader("Relação entre Depressão e Estresse (média)")
 
 st.dataframe(
     df.groupby("Depressão")["Nível de Estresse"].mean()
 )
 
-# ================================
-# RESULTADOS
-# ================================
+
+
+# Resultados
 st.subheader("Principais fatores que aumentam o estresse")
 
 top_fatores = coeficientes.head(5)["Variável"].tolist()
@@ -148,18 +166,18 @@ fatores_negativos = coeficientes.tail(5)["Variável"].tolist()
 for i, fator in enumerate(fatores_negativos, 1):
     st.write(f"{i}. {fator}")
 
-# ================================
-# CONCLUSÃO
-# ================================
-st.subheader("Conclusão")
 
-st.write(f"""
-O modelo de regressão linear foi utilizado para prever o nível de estresse.
 
-O modelo conseguiu explicar aproximadamente {r2*100:.1f}% da variação do estresse.
+# Conclusão
+# st.subheader("Conclusão")
 
-Coeficientes positivos indicam aumento do estresse,
-enquanto coeficientes negativos indicam redução.
+# st.write(f"""
+# O modelo de regressão linear foi utilizado para prever o nível de estresse.
 
-Os resultados devem ser interpretados considerando possíveis inconsistências nos dados.
-""")
+# O modelo conseguiu explicar aproximadamente {r2*100:.1f}% da variação do estresse.
+
+# Coeficientes positivos indicam aumento do estresse,
+# enquanto coeficientes negativos indicam redução.
+
+# Os resultados devem ser interpretados considerando possíveis inconsistências nos dados.
+# """)

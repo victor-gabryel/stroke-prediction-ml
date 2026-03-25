@@ -238,18 +238,3 @@ Baseado nos menores coeficientes
 
 Importante:
 Os resultados dependem da qualidade dos dados. Dados inconsistentes podem afetar a precisão do modelo.
-
----
-
-## Possíveis Melhorias
-
-* Testar outros modelos (Random Forest, XGBoost)
-* Limpeza mais avançada dos dados
-* Feature engineering
-* Validação cruzada
-
----
-
-## Autor
-
-Projeto desenvolvido para análise educacional e prática de Machine Learning.
